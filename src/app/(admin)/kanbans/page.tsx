@@ -4,7 +4,7 @@ import Breadcrumb from "@/components/common/Breadcrumb";
 import KanbanService from "@/services/KanbanService";
 import ButtonLink from "@/components/ui/button/ButtonLink";
 import { Kanban } from "@/types/kanban";
-import DataTable from "@/components/common/DataTable";
+import DataTable, { RowInfo } from "@/components/common/DataTable";
 import FilterKanban from "@/components/pages/kanban/Filter";
 import { useFetchDataKanban } from "@/hooks/useFetchDataKanban";
 import Loading from "@/components/common/Loading";
@@ -12,6 +12,7 @@ import KanbanExportExcel from "@/components/pages/kanban/KanbanExportExcel";
 import { useDeleteData } from "@/hooks/useDeleteData";
 import { confirmDelete } from "@/utils/confirm";
 import Button from "@/components/ui/button/Button";
+import { Plus } from "lucide-react";
 
 function KanbanList() {
     const [filter, setFilter] = useState({
@@ -40,18 +41,40 @@ function KanbanList() {
     } = useFetchDataKanban(KanbanService.get, "kanbans", true, filter);
 
     const columns = [
-        // {
-        //     header: "#",
-        //     accessorKey: "id",
-        //     cell: (item: Kanban) => {
-        //         const index = kanbans?.findIndex((kanban: Kanban) => kanban.id === item.id) ?? 0;
-        //         return index + 1;
-        //     },
-        // },
         {
             header: "Code",
             accessorKey: "code",
-            isNoWrap: true
+            isNoWrap: true,
+            cell: (item: Kanban, rowInfo?: RowInfo) => {
+                const isExpanded = rowInfo?.isExpanded;
+                return (
+                    <div className="flex items-center gap-2">
+                        <button
+                            type="button"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                rowInfo?.toggleRow();
+                            }}
+                            className={`inline-flex items-center justify-center w-4 h-4 rounded-full transition-all duration-200 cursor-pointer select-none shrink-0 text-white shadow-xs ${
+                                isExpanded
+                                    ? "bg-red-500 hover:bg-red-600"
+                                    : "bg-[#2957A5] hover:bg-[#1B3D78]"
+                            }`}
+                            title={isExpanded ? "Collapse details" : "Expand details"}
+                        >
+                            <Plus
+                                strokeWidth={3}
+                                className={`w-2.5 h-2.5 transition-transform duration-300 ease-out ${
+                                    isExpanded ? "rotate-45" : "rotate-0"
+                                }`}
+                            />
+                        </button>
+                        <span className="whitespace-nowrap">
+                            {item.code}
+                        </span>
+                    </div>
+                );
+            }
         },
         {
             header: "Rack",
@@ -62,30 +85,18 @@ function KanbanList() {
         {
             header: "Description",
             accessorKey: "description",
-        },
-        {
-            header: "Specification",
-            accessorKey: "specification",
-        },
-        {
-            header: "Area",
-            accessorKey: "machine_area",
-            cell: (item: Kanban) => item.machine_area?.name || '-'
-        },
-
-        {
-            header: "Machine",
-            accessorKey: "machine",
-            cell: (item: Kanban) => item.machine?.code || '-'
-        },
-
-        {
-            header: "Max Qty",
-            accessorKey: "max_quantity",
+            className: "max-w-[220px]",
+            cell: (item: Kanban) => item.description || '-'
         },
         {
             header: "Min Qty",
             accessorKey: "min_quantity",
+            cell: (item: Kanban) => item.min_quantity ?? '-'
+        },
+        {
+            header: "Max Qty",
+            accessorKey: "max_quantity",
+            cell: (item: Kanban) => item.max_quantity ?? '-'
         },
         {
             header: "Is Completed",
@@ -128,6 +139,51 @@ function KanbanList() {
         },
     ];
 
+    const renderExpandedDetails = (item: Kanban) => {
+        return (
+            <div className="p-4 rounded-xl bg-white dark:bg-gray-900 border border-gray-200/80 dark:border-gray-800 shadow-sm transition-all duration-300 transform">
+                <div className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-3 pb-2 border-b border-gray-100 dark:border-gray-800 flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full bg-[#2957A5]" />
+                    <span>Detail Informasi Kanban: {item.code}</span>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 text-xs">
+                    <div>
+                        <span className="text-gray-500 dark:text-gray-400 block font-medium">Specification</span>
+                        <span className="text-gray-900 dark:text-gray-100 font-semibold">{item.specification || '-'}</span>
+                    </div>
+                    <div>
+                        <span className="text-gray-500 dark:text-gray-400 block font-medium">Area</span>
+                        <span className="text-gray-900 dark:text-gray-100 font-semibold">{item.machine_area?.name || '-'}</span>
+                    </div>
+                    <div>
+                        <span className="text-gray-500 dark:text-gray-400 block font-medium">Machine</span>
+                        <span className="text-gray-900 dark:text-gray-100 font-semibold">{item.machine?.code || '-'}</span>
+                    </div>
+                    <div>
+                        <span className="text-gray-500 dark:text-gray-400 block font-medium">Supplier</span>
+                        <span className="text-gray-900 dark:text-gray-100 font-semibold">{item.supplier?.name || '-'}</span>
+                    </div>
+                    <div>
+                        <span className="text-gray-500 dark:text-gray-400 block font-medium">Maker</span>
+                        <span className="text-gray-900 dark:text-gray-100 font-semibold">{item.maker?.name || '-'}</span>
+                    </div>
+                    <div>
+                        <span className="text-gray-500 dark:text-gray-400 block font-medium">Lead Time</span>
+                        <span className="text-gray-900 dark:text-gray-100 font-semibold">{item.lead_time ? `${item.lead_time} days` : '-'}</span>
+                    </div>
+                    <div>
+                        <span className="text-gray-500 dark:text-gray-400 block font-medium">Order Point</span>
+                        <span className="text-gray-900 dark:text-gray-100 font-semibold">{item.order_point ?? '-'}</span>
+                    </div>
+                    <div>
+                        <span className="text-gray-500 dark:text-gray-400 block font-medium">UOM / Unit</span>
+                        <span className="text-gray-900 dark:text-gray-100 font-semibold">{item.uom || '-'}</span>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
     return (
         <div>
             <Breadcrumb items={[
@@ -139,13 +195,13 @@ function KanbanList() {
                     <KanbanExportExcel />
                     <ButtonLink size='sm' href="/kanbans/create">Create Kanban</ButtonLink>
                 </div>
-                {/* <FilterKanban
-                    filter={filter}
-                    setFilter={setFilter}
-                /> */}
                 <DataTable
                     title="Kanban List"
                     columns={columns}
+                    expandable={{
+                        hideActionColumn: true,
+                        render: renderExpandedDetails,
+                    }}
                     data={kanbans || []}
                     headerRight={<FilterKanban filter={filter} setFilter={setFilter} />}
                     isLoading={isLoading}

@@ -5,6 +5,7 @@ import PurchaseOrderService from "@/services/PurchaseOrderService";
 import ButtonLink from "@/components/ui/button/ButtonLink";
 import { useFetchDataPurchaseOrder } from "@/hooks/useFetchDataPO";
 import FilterPurchaseOrder from "@/components/pages/purchase-orders/Filter";
+import ImportPurchaseOrderModal from "@/components/pages/purchase-orders/ImportModal";
 import { dateFormat } from "@/utils/dateFormat";
 import DataTable from "@/components/common/DataTable";
 import { PurchaseOrder } from "@/types/purchaseOrder";
@@ -74,7 +75,12 @@ function PoList() {
                 <DataTable
                     title="Purchase Order History"
                     columns={columns}
-                    headerRight={<FilterPurchaseOrder filter={filter} setFilter={setFilter} />}
+                    headerRight={
+                        <div className="flex items-center gap-2">
+                            <FilterPurchaseOrder filter={filter} setFilter={setFilter} />
+                            <ImportPurchaseOrderModal />
+                        </div>
+                    }
                     data={purchaseOrders || []}
                     isLoading={isLoading}
                     pagination={pagination ? {

@@ -4,6 +4,7 @@ import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import PurchaseRequestService from "@/services/PurchaseRequestService";
 import ButtonLink from "@/components/ui/button/ButtonLink";
 import FilterPurchaseRequest from "@/components/pages/purchase-request/Filter";
+import ImportPurchaseRequestModal from "@/components/pages/purchase-request/ImportModal";
 import { dateFormat } from "@/utils/dateFormat";
 import DataTable from "@/components/common/DataTable";
 import { PurchaseRequest } from "@/types/purchaseRequest";
@@ -76,7 +77,12 @@ function ListPr() {
                 <DataTable
                     title="Purchase Request History"
                     columns={columns}
-                    headerRight={<FilterPurchaseRequest filter={filter} setFilter={setFilter} />}
+                    headerRight={
+                        <div className="flex items-center gap-2">
+                            <FilterPurchaseRequest filter={filter} setFilter={setFilter} />
+                            <ImportPurchaseRequestModal />
+                        </div>
+                    }
                     data={purchaseRequests || []}
                     isLoading={isLoading}
                     pagination={pagination ? {

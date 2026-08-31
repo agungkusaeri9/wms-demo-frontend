@@ -78,7 +78,7 @@ const FilterPurchaseOrderManual = ({ filter, setFilter }: {
 
     return (
         <div className="relative">
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center gap-2">
                 {/* Active Filter Chips */}
                 {filter.pr_number && (
                     <div className="flex items-center gap-1 px-2 py-1 text-xs bg-gray-100 rounded-full dark:bg-gray-800">

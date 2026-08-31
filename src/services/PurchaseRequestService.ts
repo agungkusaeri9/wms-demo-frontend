@@ -88,5 +88,15 @@ const update = async (id: number, data: Form) => {
   }
 };
 
-const PurchaseRequestService = { get, getById, create, update };
+const importExcel = async (data: { file: string; filename: string }) => {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const response = await api.post<any>("purchase-requests/import", data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const PurchaseRequestService = { get, getById, create, update, importExcel };
 export default PurchaseRequestService;

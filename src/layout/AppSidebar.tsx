@@ -21,7 +21,17 @@ import { useQuery } from "@tanstack/react-query";
 import ReminderService from "@/services/ReminderService";
 import KanbanService from "@/services/KanbanService";
 import KanbanStagingService from "@/services/KanbanStagingService";
-import { KanbanIcon } from "lucide-react";
+import {
+  LayoutDashboard,
+  Scale,
+  ShoppingCart,
+  FileText,
+  Boxes,
+  Kanban,
+  Database,
+  Trash2,
+  Bell
+} from "lucide-react";
 type NavItem = {
   name: string;
   icon: React.ReactNode;
@@ -94,19 +104,19 @@ const AppSidebar: React.FC = () => {
 
   const navItems: NavItem[] = [
     {
-      icon: <GridIcon />,
+      icon: <LayoutDashboard className="w-5 h-5" />,
       name: "Dashboard",
       path: "/dashboard",
       requiresAuth: false
     },
     {
-      icon: <BalanceIcon />,
+      icon: <Scale className="w-5 h-5" />,
       name: "Balance",
       path: "/balance",
       requiresAuth: false
     },
     {
-      icon: <PurchaseOrderIcon />,
+      icon: <ShoppingCart className="w-5 h-5" />,
       name: "Purchase Order",
       subItems: [
         { name: "All PO", path: "/purchase-orders", pro: false },
@@ -114,20 +124,14 @@ const AppSidebar: React.FC = () => {
       ],
       requiresAuth: true
     },
-    // {
-    //   icon: <PurchaseOrderIcon />,
-    //   name: "Purchase Order",
-    //   path: "/purchase-orders",
-    //   requiresAuth: false
-    // },
     {
-      icon: <PurchaseRequestIcon />,
+      icon: <FileText className="w-5 h-5" />,
       name: "Purchase Request",
       path: "/purchase-requests",
       requiresAuth: false
     },
     {
-      icon: <HistoryIcon />,
+      icon: <Boxes className="w-5 h-5" />,
       name: "Stock",
       subItems: [
         { name: "In", path: "/stock-ins", pro: false },
@@ -136,7 +140,7 @@ const AppSidebar: React.FC = () => {
       requiresAuth: false
     },
     {
-      icon: <KanbanIcon />,
+      icon: <Kanban className="w-5 h-5" />,
       name: "Kanban",
       subItems: [
         { name: "Kanban", path: "/kanbans", pro: false, count: (uncompletedKanbansCount ?? 0) > 0 ? uncompletedKanbansCount : undefined },
@@ -148,7 +152,7 @@ const AppSidebar: React.FC = () => {
       requiresAuth: true
     },
     {
-      icon: <DatabaseIcon />,
+      icon: <Database className="w-5 h-5" />,
       name: "Master Data",
       subItems: [
         { name: "Operator", path: "/operators", pro: false },
@@ -159,21 +163,19 @@ const AppSidebar: React.FC = () => {
         { name: "Suppliers", path: "/suppliers", pro: false },
         { name: "Group", path: "/groups", pro: false },
         { name: "Requester", path: "/requesters", pro: false },
-
       ],
       requiresAuth: true
     },
     {
-      icon: <TrashIcon />,
+      icon: <Trash2 className="w-5 h-5" />,
       name: "Trash",
       subItems: [
         { name: "Kanban", path: "/trash/kanbans", pro: false },
-
       ],
       requiresAuth: true
     },
     {
-      icon: <ReminderIcon />,
+      icon: <Bell className="w-5 h-5" />,
       name: "Reminder",
       path: "/reminder",
       count: remindersCount,
@@ -191,7 +193,7 @@ const AppSidebar: React.FC = () => {
     navItems: NavItem[],
     menuType: "main" | "others"
   ) => (
-    <ul className="flex flex-col gap-4">
+    <ul className="flex flex-col gap-1.5">
       {navItems?.map((nav, index) => {
         if (nav.requiresAuth && !isAuthenticated) {
           return null;
@@ -414,56 +416,53 @@ const AppSidebar: React.FC = () => {
       onMouseLeave={() => setIsHovered(false)}
     >
       <div
-        className={`py-8 flex ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-center"
+        className={`py-6 flex ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-center"
           }`}
       >
         <Link href="/dashboard">
           {isExpanded || isHovered || isMobileOpen ? (
-            <div className="flex flex-col align-center items-center" >
+            <div className="flex flex-col align-center items-center px-2" >
               <Image
-                className="dark:hidden"
-                src="/images/logo/cmwi-logo.png"
-                alt="Logo"
-                width={150}
-                height={40}
+                className="dark:hidden object-contain h-10 w-auto"
+                src="/images/logo/toho-logo.png"
+                alt="TOHO Logo"
+                width={200}
+                height={50}
+                priority
               />
               <Image
-                className="hidden dark:block"
-                src="/images/logo/cmwi-logo.png"
-                alt="Logo"
-                width={150}
-                height={40}
+                className="hidden dark:block object-contain h-10 w-auto"
+                src="/images/logo/toho-logo.png"
+                alt="TOHO Logo"
+                width={200}
+                height={50}
+                priority
               />
-              <h2 className="text-gray-700 uppercase font-semibold text-sm ml-2">
-                Stock Control System
+              <h2 className="text-gray-700 dark:text-gray-300 uppercase font-semibold text-[11px] mt-2 tracking-wider text-center leading-snug">
+                Warehouse Management <br />
+                System
               </h2>
             </div>
           ) : (
             <Image
-              src="/images/logo/cmwi-logo.png"
+              src="/images/logo/toho-logo.png"
               alt="Logo"
-              width={32}
-              height={32}
+              width={34}
+              height={34}
+              className="object-contain h-8 w-auto"
             />
           )}
         </Link>
       </div>
-      <div className="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar ">
+      <div className="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
         <nav className="mb-6">
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
             <div>
-              <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-                  ? "lg:justify-center"
-                  : "justify-start"
-                  }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  ""
-                ) : (
+              {!isExpanded && !isHovered && !isMobileOpen ? (
+                <h2 className="mb-2 text-xs uppercase flex justify-center text-gray-400">
                   <HorizontaLDots />
-                )}
-              </h2>
+                </h2>
+              ) : null}
               {renderMenuItems(navItems, "main")}
             </div>
 

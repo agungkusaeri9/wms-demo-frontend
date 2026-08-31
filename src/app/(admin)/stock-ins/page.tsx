@@ -31,16 +31,19 @@ function StockInList() {
         {
             header: 'Date',
             accessorKey: 'po_date',
-            cell: (item: StockIn) => dateFormat(item.created_at)
+            isNoWrap: true,
+            cell: (item: StockIn) => dateFormat(item.created_at, 'DD MMM YYYY HH:mm')
         },
         {
             header: "Code",
-            accessorKey: "kanban_code"
+            accessorKey: "kanban_code",
+            isNoWrap: true
         },
         {
             header: "Rack",
             accessorKey: "rack",
-            cell: (item: StockIn) => item.kanban?.rack?.code
+            isNoWrap: true,
+            cell: (item: StockIn) => item.kanban?.rack?.code || '-'
         },
         {
             header: "Description",

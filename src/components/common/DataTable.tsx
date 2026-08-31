@@ -4,13 +4,24 @@ import { ChevronDown, ChevronUp, ChevronsUpDown, X } from "lucide-react";
 import ComponentCard from "./ComponentCard";
 import SkeletonTable from './SkeletonTable';
 
-interface Column {
+export interface RowInfo {
+    isExpanded: boolean;
+    toggleRow: () => void;
+}
+
+export interface Column {
     header: string;
     accessorKey: string;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    cell?: (info: any) => React.ReactNode;
+    cell?: (info: any, rowInfo?: RowInfo) => React.ReactNode;
     className?: string;
     isNoWrap?: boolean;
+}
+
+export interface ExpandableConfig {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    render: (item: any) => React.ReactNode;
+    hideActionColumn?: boolean;
 }
 
 interface DataTableProps {
@@ -32,10 +43,7 @@ interface DataTableProps {
         onChange: (value: string) => void;
         placeholder?: string;
     };
-    expandable?: {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        render: (item: any) => React.ReactNode;
-    };
+    expandable?: ExpandableConfig;
     headerRight?: React.ReactNode;
 }
 
@@ -145,86 +153,98 @@ export default function DataTable({
                     </div>
                     <div className="overflow-hidden rounded-md border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
                         <div className="max-w-full overflow-x-auto">
-                            <div style={{ maxHeight: 500, overflowY: 'auto' }}>
-                                <table className="min-w-full divide-y divide-gray-200 dark:divide-white/[0.05]" style={{ tableLayout: 'fixed' }}>
-                                    <thead
-                                        className="bg-[#00008B] text-white"
-                                        style={{ position: 'sticky', top: 0, zIndex: 2 }}
-                                    >
-                                        <tr>
-                                            {expandable && (
-                                                <th className="w-20 px-3 py-3 text-center text-xs font-medium text-white uppercase tracking-wider dark:text-gray-400">
-                                                    Action
-                                                </th>
-                                            )}
-                                            {columns.map((column, index) => (
-                                                <th
-                                                    key={index}
-                                                    className={`px-3 py-3 text-left text-xs font-medium text-white uppercase tracking-wider dark:text-gray-400 ${column.className || ''}`}
-                                                    onClick={() => handleSort(column.accessorKey)}
-                                                >
-                                                    <div className="flex items-center gap-1 cursor-pointer">
-                                                        {column.header}
-                                                        {sortConfig?.key === column.accessorKey && (
-                                                            sortConfig.direction === 'asc' ?
-                                                                <ChevronUp className="h-4 w-4" /> :
-                                                                <ChevronDown className="h-4 w-4" />
-                                                        )}
-                                                        {sortConfig?.key !== column.accessorKey && (
-                                                            <ChevronsUpDown className="h-4 w-4 opacity-50" />
-                                                        )}
-                                                    </div>
-                                                </th>
-                                            ))}
-                                        </tr>
-                                    </thead>
+                            <table className="min-w-full divide-y divide-gray-200 dark:divide-white/[0.05]">
+                                <thead className="bg-gray-50 dark:bg-gray-800/60 border-b border-gray-200 dark:border-gray-700">
+                                    <tr>
+                                        {expandable && !expandable.hideActionColumn && (
+                                            <th className="w-20 px-3 py-3.5 text-center text-sm font-semibold text-gray-700 dark:text-gray-200 capitalize whitespace-nowrap">
+                                                Action
+                                            </th>
+                                        )}
+                                        {columns.map((column, index) => (
+                                            <th
+                                                key={index}
+                                                className={`px-3 py-3.5 text-left text-sm font-semibold text-gray-700 dark:text-gray-200 capitalize whitespace-nowrap ${column.className || ''}`}
+                                                onClick={() => handleSort(column.accessorKey)}
+                                            >
+                                                <div className="flex items-center gap-1 cursor-pointer select-none">
+                                                    <span>{column.header}</span>
+                                                    {sortConfig?.key === column.accessorKey && (
+                                                        sortConfig.direction === 'asc' ?
+                                                            <ChevronUp className="h-4 w-4 text-brand-500 shrink-0" /> :
+                                                            <ChevronDown className="h-4 w-4 text-brand-500 shrink-0" />
+                                                    )}
+                                                    {sortConfig?.key !== column.accessorKey && (
+                                                        <ChevronsUpDown className="h-4 w-4 text-gray-400 opacity-60 shrink-0" />
+                                                    )}
+                                                </div>
+                                            </th>
+                                        ))}
+                                    </tr>
+                                </thead>
                                     <tbody className="bg-white divide-y divide-gray-200 dark:divide-white/[0.05] dark:bg-white/[0.03]">
                                         {sortedData.length === 0 ? (
                                             <tr>
-                                                <td colSpan={columns.length + (expandable ? 1 : 0)} className="px-3 py-[5px] text-center text-sm text-gray-500 dark:text-gray-400">
+                                                <td colSpan={columns.length + (expandable && !expandable.hideActionColumn ? 1 : 0)} className="px-3 py-[5px] text-center text-sm text-gray-500 dark:text-gray-400">
                                                     No results found.
                                                 </td>
                                             </tr>
                                         ) : (
-                                            sortedData.map((item, index) => (
-                                                <React.Fragment key={index}>
-                                                    <tr className="hover:bg-gray-50 dark:hover:bg-white/[0.02]">
-                                                        {expandable && (
-                                                            <td className="px-3 py-[5px] text-center">
-                                                                <button
-                                                                    onClick={() => toggleRow(index)}
-                                                                    className="inline-flex items-center justify-center p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-white/[0.05] transition-colors"
-                                                                    title={expandedRows.includes(index) ? "Hide details" : "Show details"}
-                                                                >
-                                                                    {expandedRows.includes(index) ? (
-                                                                        <ChevronUp className="w-4 h-4 text-gray-500" />
-                                                                    ) : (
-                                                                        <ChevronDown className="w-4 h-4 text-gray-500" />
-                                                                    )}
-                                                                </button>
-                                                            </td>
-                                                        )}
-                                                        {columns.map((column, colIndex) => (
-                                                            <td key={colIndex} className={`px-3 py-[5px] text-sm text-gray-500 dark:text-gray-400  ${column.isNoWrap ? "whitespace-nowrap overflow-hidden text-ellipsis max-w-[200px]" : "whitespace-normal"} ${column.className || ''}`}>
-                                                                {column.cell ? column.cell(item) : item[column.accessorKey]}
-                                                            </td>
-                                                        ))}
-                                                    </tr>
-                                                    {expandable && expandedRows.includes(index) && (
-                                                        <tr className="bg-gray-50 dark:bg-white/[0.02]">
-                                                            <td colSpan={columns.length + 1} className="px-3 py-4">
-                                                                {expandable.render(item)}
-                                                            </td>
+                                            sortedData.map((item, index) => {
+                                                const isExpanded = expandedRows.includes(index);
+                                                const rowInfo: RowInfo = {
+                                                    isExpanded,
+                                                    toggleRow: () => toggleRow(index)
+                                                };
+
+                                                return (
+                                                    <React.Fragment key={index}>
+                                                        <tr
+                                                            onClick={() => {
+                                                                if (expandable) {
+                                                                    toggleRow(index);
+                                                                }
+                                                            }}
+                                                            className={`hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors ${
+                                                                expandable ? "cursor-pointer" : ""
+                                                            }`}
+                                                        >
+                                                            {expandable && !expandable.hideActionColumn && (
+                                                                <td className="px-3 py-[5px] text-center">
+                                                                    <button
+                                                                        onClick={() => toggleRow(index)}
+                                                                        className="inline-flex items-center justify-center p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-white/[0.05] transition-colors"
+                                                                        title={isExpanded ? "Hide details" : "Show details"}
+                                                                    >
+                                                                        {isExpanded ? (
+                                                                            <ChevronUp className="w-4 h-4 text-gray-500" />
+                                                                        ) : (
+                                                                            <ChevronDown className="w-4 h-4 text-gray-500" />
+                                                                        )}
+                                                                    </button>
+                                                                </td>
+                                                            )}
+                                                            {columns.map((column, colIndex) => (
+                                                                <td key={colIndex} className={`px-3 py-[5px] text-sm text-gray-500 dark:text-gray-400  ${column.isNoWrap ? "whitespace-nowrap overflow-hidden text-ellipsis max-w-[200px]" : "whitespace-normal"} ${column.className || ''}`}>
+                                                                    {column.cell ? column.cell(item, rowInfo) : item[column.accessorKey]}
+                                                                </td>
+                                                            ))}
                                                         </tr>
-                                                    )}
-                                                </React.Fragment>
-                                            ))
+                                                        {expandable && isExpanded && (
+                                                            <tr className="bg-blue-50/40 dark:bg-white/[0.02] border-t border-b border-blue-100 dark:border-white/[0.05]">
+                                                                <td colSpan={columns.length + (expandable && !expandable.hideActionColumn ? 1 : 0)} className="px-4 py-3">
+                                                                    {expandable.render(item)}
+                                                                </td>
+                                                            </tr>
+                                                        )}
+                                                    </React.Fragment>
+                                                );
+                                            })
                                         )}
                                     </tbody>
                                 </table>
                             </div>
                         </div>
-                    </div>
 
                     {pagination && (
                         <div className="mt-4 flex items-center justify-between">

@@ -40,7 +40,7 @@ export default function Page() {
                                         Date
                                     </div>
                                     <div className="text-sm font-semibold text-gray-900 dark:text-white">
-                                        {dateFormat(stockIn?.created_at)}
+                                        {dateFormat(stockIn?.created_at, 'DD MMM YYYY HH:mm')}
                                     </div>
                                 </div>
                                 <div className="space-y-1">
