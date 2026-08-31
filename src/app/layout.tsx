@@ -24,7 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <title>CMWI Dashboard</title>
+        <title>WMS Demo Dashboard</title>
       </head>
       <body suppressHydrationWarning className={`${outfit.variable} dark:bg-gray-900`}>
         <WebSocketNotification />
