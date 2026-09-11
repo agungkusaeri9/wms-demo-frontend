@@ -18,6 +18,7 @@ export type Kanban = {
     min_quantity: number;
     rack: Rack;
     stock_in_quantity: number;
+    total_stock_out_quantity?: number;
     js_ending_quantity?: number;
     uom: string;
     maker?: Maker;

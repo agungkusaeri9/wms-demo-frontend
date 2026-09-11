@@ -31,16 +31,16 @@ type FilterExportBalance = {
   js_balance_status: string;
 };
 
-const get: FetchFunctionWithPagination<Kanban> = async (
+const get = async (
   page = 1,
   limit = 10,
   keyword = "",
-  machine_id = null,
-  machine_area_id = null,
-  rack_id = null,
-  status = null,
-  completed_status = null,
-  js_balance_status = null
+  machine_id: number | null = null,
+  machine_area_id: number | null = null,
+  rack_id: number | null = null,
+  status: string | null = null,
+  completed_status: string | null = null,
+  js_balance_status: string | null = null
 ): Promise<PaginatedResponse<Kanban>> => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const params: any = {

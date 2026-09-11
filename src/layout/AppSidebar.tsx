@@ -30,7 +30,9 @@ import {
   Kanban,
   Database,
   Trash2,
-  Bell
+  Bell,
+  Code2,
+  ClipboardCheck
 } from "lucide-react";
 type NavItem = {
   name: string;
@@ -131,6 +133,12 @@ const AppSidebar: React.FC = () => {
       requiresAuth: false
     },
     {
+      icon: <ClipboardCheck className="w-5 h-5" />,
+      name: "Receiving Report",
+      path: "/receiving-reports",
+      requiresAuth: false
+    },
+    {
       icon: <Boxes className="w-5 h-5" />,
       name: "Stock",
       subItems: [
@@ -179,6 +187,12 @@ const AppSidebar: React.FC = () => {
       name: "Reminder",
       path: "/reminder",
       count: remindersCount,
+      requiresAuth: false
+    },
+    {
+      icon: <Code2 className="w-5 h-5" />,
+      name: "Development Mode",
+      path: "/development",
       requiresAuth: false
     },
   ];

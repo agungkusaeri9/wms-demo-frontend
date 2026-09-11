@@ -9,7 +9,7 @@ export interface PaginationMeta {
   lastPage: number;
 }
 
-const get: FetchFunctionWithPagination<StockIn> = async (
+const get = async (
   page = 1,
   limit = 10,
   start_date?: string,

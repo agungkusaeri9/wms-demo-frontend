@@ -29,7 +29,7 @@ export interface PaginationMeta {
 // };
 
 
-const get: FetchFunctionWithPagination<PurchaseRequest> = async (
+const get = async (
   page = 1,
   limit = 10,
   keyword?: string,
@@ -98,5 +98,41 @@ const importExcel = async (data: { file: string; filename: string }) => {
   }
 };
 
-const PurchaseRequestService = { get, getById, create, update, importExcel };
+const downloadTemplate = async () => {
+  try {
+    const response = await api.get("purchase-requests/template", {
+      responseType: "blob",
+    });
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "TemplatePurchaseRequest.xlsb");
+    document.body.appendChild(link);
+    link.click();
+    link.parentNode?.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    throw error;
+  }
+};
+
+const getNextSequence = async (date?: string) => {
+  try {
+    const response = await api.get<{
+      data: {
+        date: string;
+        dateFormatted: string;
+        sequence: number;
+        filename: string;
+      };
+    }>("purchase-requests/next-sequence", {
+      params: date ? { date } : undefined,
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const PurchaseRequestService = { get, getById, create, update, importExcel, downloadTemplate, getNextSequence };
 export default PurchaseRequestService;

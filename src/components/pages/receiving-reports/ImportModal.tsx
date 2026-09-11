@@ -4,11 +4,11 @@ import { useDropzone } from "react-dropzone";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { UploadCloud, FileSpreadsheet, X, FileCheck, AlertCircle, ArrowUpCircle, Download } from "lucide-react";
-import PurchaseOrderService from "@/services/PurchaseOrderService";
+import ReceivingReportService from "@/services/ReceivingReportService";
 import handleError from "@/utils/handleErrors";
 import Button from "@/components/ui/button/Button";
 
-export default function ImportPurchaseOrderModal() {
+export default function ImportReceivingReportModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isDownloading, setIsDownloading] = useState(false);
@@ -17,8 +17,8 @@ export default function ImportPurchaseOrderModal() {
   const handleDownloadTemplate = async () => {
     try {
       setIsDownloading(true);
-      await PurchaseOrderService.downloadTemplate();
-      toast.success("Template Purchase Order berhasil didownload!");
+      await ReceivingReportService.downloadTemplate();
+      toast.success("Template Receiving Report berhasil didownload!");
     } catch (error: any) {
       toast.error("Gagal mendownload template file.");
     } finally {
@@ -54,14 +54,14 @@ export default function ImportPurchaseOrderModal() {
         reader.onerror = (error) => reject(error);
       });
 
-      return PurchaseOrderService.importExcel({
+      return ReceivingReportService.importExcel({
         file: base64,
         filename: file.name,
       });
     },
     onSuccess: () => {
-      toast.success("File Purchase Order berhasil diimport!");
-      queryClient.invalidateQueries({ queryKey: ["purchaseOrders"] });
+      toast.success("File Receiving Report berhasil diimport!");
+      queryClient.invalidateQueries({ queryKey: ["receivingReports"] });
       handleClose();
     },
     onError: (error: any) => {
@@ -116,7 +116,7 @@ export default function ImportPurchaseOrderModal() {
                 </div>
                 <div>
                   <h2 className="text-base font-bold text-gray-900 dark:text-white">
-                    Import Purchase Order
+                    Import Receiving Report
                   </h2>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
                     Upload file excel (.xlsb / .xlsx / .xls / .csv)
@@ -143,7 +143,7 @@ export default function ImportPurchaseOrderModal() {
                   </div>
                   <div>
                     <h4 className="text-xs font-semibold text-gray-900 dark:text-white">
-                      Template Purchase Order
+                      Template Receiving Report
                     </h4>
                     <p className="text-[11px] text-gray-500 dark:text-gray-400">
                       Gunakan format template standar (.xlsb)
@@ -172,10 +172,10 @@ export default function ImportPurchaseOrderModal() {
                   <span>Format Penamaan File Disarankan</span>
                 </div>
                 <p className="text-[11px] text-amber-800 dark:text-amber-300/80 leading-relaxed">
-                  Gunakan format penamaan standar: <code className="px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-900/50 font-mono font-semibold text-amber-900 dark:text-amber-200">PO_DDMMYYYY_Urutan</code>
+                  Gunakan format penamaan standar: <code className="px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-900/50 font-mono font-semibold text-amber-900 dark:text-amber-200">RR_DDMMYYYY_Urutan</code>
                 </p>
                 <p className="text-[11px] text-amber-700 dark:text-amber-400">
-                  Contoh: <span className="font-mono font-medium">PO_11092026_1.xlsb</span> (file ke-1), <span className="font-mono font-medium">PO_11092026_2.xlsb</span> (file ke-2 di hari yang sama).
+                  Contoh: <span className="font-mono font-medium">RR_02092026_1.xlsb</span> (file ke-1), <span className="font-mono font-medium">RR_02092026_2.xlsb</span> (file ke-2 di hari yang sama).
                 </p>
               </div>
 
@@ -241,7 +241,7 @@ export default function ImportPurchaseOrderModal() {
               <div className="flex items-start gap-2.5 p-3 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-800 text-[11px] text-gray-500 dark:text-gray-400">
                 <AlertCircle className="h-4 w-4 text-[#107C41] shrink-0 mt-0.5" />
                 <span>
-                  Pastikan format kolom di file Excel sesuai dengan template Purchase Order (terdapat kolom No, Dept, Supplier, PO No, PO Date, SOB/PR Date).
+                  Pastikan header file Excel berisi kolom <strong>Product Code</strong> dan <strong>Received</strong> sesuai template standar.
                 </span>
               </div>
             </div>

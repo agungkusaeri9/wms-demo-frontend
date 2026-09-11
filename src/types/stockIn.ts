@@ -3,8 +3,9 @@ import { Operator } from "./operator";
 
 export type StockIn = {
     id: number;
-    kanban:Kanban;
-    quantity:number;
+    kanban_code?: string;
+    kanban: Kanban;
+    quantity: number;
     operator?: Operator;
-    created_at:string;
+    created_at: string;
 }

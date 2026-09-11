@@ -9,15 +9,15 @@ export interface PaginationMeta {
   lastPage: number;
 }
 
-const get: FetchFunctionWithPagination<StockOut> = async (
+const get = async (
   page = 1,
   limit = 10,
   start_date?: string,
   end_date?: string,
   code?: string,
-  machine_id?: number,
-  machine_area_id?: number,
-  sub_machine_id?: number
+  machine_id?: number | null,
+  machine_area_id?: number | null,
+  sub_machine_id?: number | null
 ): Promise<PaginatedResponse<StockOut>> => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const params: any = {

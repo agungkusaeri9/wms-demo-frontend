@@ -15,7 +15,7 @@ interface Form {
   [key: string]: any;
 }
 
-const get: FetchFunctionWithPagination<PurchaseOrder> = async (
+const get = async (
   page = 1,
   limit = 10,
   keyword?: string,

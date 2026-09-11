@@ -3,14 +3,28 @@ import React, { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { UploadCloud, FileSpreadsheet, X, FileCheck, AlertCircle, ArrowUpCircle } from "lucide-react";
+import { UploadCloud, FileSpreadsheet, X, FileCheck, AlertCircle, ArrowUpCircle, Download } from "lucide-react";
 import PurchaseRequestService from "@/services/PurchaseRequestService";
 import handleError from "@/utils/handleErrors";
+import Button from "@/components/ui/button/Button";
 
 export default function ImportPurchaseRequestModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isDownloading, setIsDownloading] = useState(false);
   const queryClient = useQueryClient();
+
+  const handleDownloadTemplate = async () => {
+    try {
+      setIsDownloading(true);
+      await PurchaseRequestService.downloadTemplate();
+      toast.success("Template Purchase Request berhasil didownload!");
+    } catch (error: any) {
+      toast.error("Gagal mendownload template file.");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
@@ -24,6 +38,7 @@ export default function ImportPurchaseRequestModal() {
     accept: {
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
       "application/vnd.ms-excel": [".xls"],
+      "application/vnd.ms-excel.sheet.binary.macroEnabled.12": [".xlsb"],
       "text/csv": [".csv"],
     },
     maxFiles: 1,
@@ -78,17 +93,16 @@ export default function ImportPurchaseRequestModal() {
 
   return (
     <>
-      {/* Trigger Button matching Filter button size with 100% pure Excel green */}
-      <div className="mb-4">
-        <button
-          type="button"
-          onClick={() => setIsOpen(true)}
-          className="inline-flex items-center justify-center font-medium gap-2 rounded-lg transition px-4 py-3 text-sm bg-[#107C41] hover:bg-[#0E6C38] text-white shadow-xs cursor-pointer select-none"
-        >
-          <FileSpreadsheet className="w-4 h-4 text-white" />
-          <span className="text-white font-medium">Import Excel</span>
-        </button>
-      </div>
+      {/* Trigger Button */}
+      <Button
+        type="button"
+        size="sm"
+        onClick={() => setIsOpen(true)}
+        className="bg-[#107C41] hover:bg-[#0E6C38] text-white flex items-center gap-2 cursor-pointer shadow-theme-xs"
+      >
+        <FileSpreadsheet className="w-4 h-4" />
+        <span>Import Excel</span>
+      </Button>
 
       {/* Modal Backdrop & Dialog */}
       {isOpen && (
@@ -105,7 +119,7 @@ export default function ImportPurchaseRequestModal() {
                     Import Purchase Request
                   </h2>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
-                    Upload file excel (.xlsx / .xls / .csv)
+                    Upload file excel (.xlsb / .xlsx / .xls / .csv)
                   </p>
                 </div>
               </div>
@@ -121,6 +135,50 @@ export default function ImportPurchaseRequestModal() {
 
             {/* Body */}
             <div className="p-6 space-y-4">
+              {/* Template Download Card */}
+              <div className="flex items-center justify-between p-3.5 rounded-xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/40">
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center h-9 w-9 rounded-lg bg-blue-600 text-white shrink-0 shadow-xs">
+                    <FileSpreadsheet className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-semibold text-gray-900 dark:text-white">
+                      Template Purchase Request
+                    </h4>
+                    <p className="text-[11px] text-gray-500 dark:text-gray-400">
+                      Gunakan format template standar (.xlsb)
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleDownloadTemplate}
+                  disabled={isDownloading}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-700 dark:text-blue-300 bg-white dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-blue-900/40 border border-blue-200 dark:border-blue-800 rounded-lg shadow-2xs transition-all cursor-pointer disabled:opacity-50"
+                >
+                  {isDownloading ? (
+                    <span className="inline-block animate-spin h-3.5 w-3.5 border-2 border-blue-600 border-t-transparent rounded-full" />
+                  ) : (
+                    <Download className="h-3.5 w-3.5" />
+                  )}
+                  <span>Download</span>
+                </button>
+              </div>
+
+              {/* Format Penamaan File Guide */}
+              <div className="p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-900/40 text-xs space-y-1.5">
+                <div className="flex items-center gap-2 font-semibold text-amber-900 dark:text-amber-300">
+                  <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+                  <span>Format Penamaan File Disarankan</span>
+                </div>
+                <p className="text-[11px] text-amber-800 dark:text-amber-300/80 leading-relaxed">
+                  Gunakan format penamaan standar: <code className="px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-900/50 font-mono font-semibold text-amber-900 dark:text-amber-200">PR_DDMMYYYY_Urutan</code>
+                </p>
+                <p className="text-[11px] text-amber-700 dark:text-amber-400">
+                  Contoh: <span className="font-mono font-medium">PR_11092026_1.xlsb</span> (file ke-1), <span className="font-mono font-medium">PR_11092026_2.xlsb</span> (file ke-2 di hari yang sama).
+                </p>
+              </div>
+
               {/* Dropzone Area */}
               <div
                 {...getRootProps()}
@@ -143,7 +201,7 @@ export default function ImportPurchaseRequestModal() {
                       : "Drag & drop file Excel di sini, atau klik"}
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    Mendukung format .xlsx, .xls, atau .csv (Maks. 50 MB)
+                    Mendukung format .xlsb, .xlsx, .xls, atau .csv (Maks. 50 MB)
                   </p>
                 </div>
               </div>
